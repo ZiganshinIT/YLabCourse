@@ -1,43 +1,30 @@
 package week2.complexNumbers;
 
-public class ComplexNumbers {
-    private double realPart;
-    private double imaginaryPart;
+public interface ComplexNumbers {
+    /**
+     * суммирует к значению объекта значение, переданное в параметре
+     * @param another объект ComplexNumbersImpl
+     * @return новый объект ComplexNumbersImpl
+     */
+    ComplexNumbersImpl addTo(ComplexNumbersImpl another);
 
-    ComplexNumbers(double realPart) {
-        this.realPart = realPart;
-    }
-    ComplexNumbers(double realPart, double imaginaryPart) {
-        this.realPart = realPart;
-        this.imaginaryPart = imaginaryPart;
-    }
+    /**
+     * вычитает из значения объекта значение объекта, переданного в параметре
+     * @param another объект ComplexNumbersImpl
+     * @return новый объект ComplexNumbersImpl
+     */
+    ComplexNumbersImpl subtract(ComplexNumbersImpl another);
 
-    public ComplexNumbers addTo(ComplexNumbers another) {
-        double realPart = this.realPart + another.realPart;
-        double imaginaryPart = this.imaginaryPart + another.imaginaryPart;
-        return new ComplexNumbers(realPart, imaginaryPart);
-    }
+    /**
+     * умножает значение объекта значение, переданное в параметре
+     * @param another объект ComplexNumbersImpl
+     * @return новый объект ComplexNumbersImpl
+     */
+    ComplexNumbersImpl multiplyBy(ComplexNumbersImpl another);
 
-    public ComplexNumbers subtract(ComplexNumbers another) {
-        double realPart = this.realPart - another.realPart;
-        double imaginaryPart = this.imaginaryPart - another.imaginaryPart;
-        return new ComplexNumbers(realPart, imaginaryPart);
-    }
-
-    public ComplexNumbers multiplyBy(ComplexNumbers another) {
-        double realPart = (this.realPart * another.realPart) - (this.imaginaryPart * another.imaginaryPart);
-        double imaginaryPart = (this.realPart * another.imaginaryPart) + (another.realPart * this.imaginaryPart);
-        return new ComplexNumbers(realPart, imaginaryPart);
-    }
-
-    public double getModule() {
-        return Math.sqrt(this.realPart * this.realPart + this.imaginaryPart * this.imaginaryPart);
-    }
-
-    @Override
-    public String toString() {
-        if (this.imaginaryPart < 0)
-            return this.realPart + " - " + -this.imaginaryPart + "i";
-        return this.realPart + " + " + this.imaginaryPart + "i";
-    }
+    /**
+     * Возращает модуль числа
+     * @return модуль числа
+     */
+    double getModule();
 }
