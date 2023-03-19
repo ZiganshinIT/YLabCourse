@@ -1,4 +1,4 @@
-package week2.complexNumbers;
+package main.java.week2.complexNumbers;
 
 public interface ComplexNumbers {
     /**

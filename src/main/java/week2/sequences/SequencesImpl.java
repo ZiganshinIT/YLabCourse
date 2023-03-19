@@ -1,4 +1,4 @@
-package week2.sequences;
+package main.java.week2.sequences;
 
 public class SequencesImpl implements Sequences{
     @Override

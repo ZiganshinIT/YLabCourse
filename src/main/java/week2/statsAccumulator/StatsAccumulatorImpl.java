@@ -1,4 +1,4 @@
-package week2.statsAccumulator;
+package main.java.week2.statsAccumulator;
 
 public class StatsAccumulatorImpl implements StatsAccumulator{
 
