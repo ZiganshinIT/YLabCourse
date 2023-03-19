@@ -1,4 +1,4 @@
-package main.java.week2.snilsValidator;
+package week2.snilsValidator;
 public interface SnilsValidator {
     /**
      * Проверяет, что в строке содержится валидный номер СНИЛС

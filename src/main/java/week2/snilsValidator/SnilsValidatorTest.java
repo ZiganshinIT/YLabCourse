@@ -1,4 +1,4 @@
-package main.java.week2.snilsValidator;
+package week2.snilsValidator;
 
 public class SnilsValidatorTest {
     public static void main(String[] args) {

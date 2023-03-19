@@ -1,4 +1,4 @@
-package main.java.week3.transliterator;
+package week3.transliterator;
 
 public class TransliteratorTest {
     public static void main(String[] args) {

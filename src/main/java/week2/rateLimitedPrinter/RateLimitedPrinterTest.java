@@ -1,4 +1,4 @@
-package main.java.week2.rateLimitedPrinter;
+package week2.rateLimitedPrinter;
 
 public class RateLimitedPrinterTest {
     public static void main(String[] args) {

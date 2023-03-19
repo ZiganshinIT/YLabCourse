@@ -1,4 +1,4 @@
-package main.java.week3.datedMap;
+package week3.datedMap;
 
 import java.util.Date;
 import java.util.Map;

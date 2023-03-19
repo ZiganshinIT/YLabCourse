@@ -1,4 +1,4 @@
-package main.java.week2.complexNumbers;
+package week2.complexNumbers;
 
 public class ComplexNumbersImpl implements ComplexNumbers{
     private double realPart;

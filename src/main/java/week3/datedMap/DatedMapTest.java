@@ -1,4 +1,4 @@
-package main.java.week3.datedMap;
+package week3.datedMap;
 
 public class DatedMapTest {
     public static void main(String[] args) throws InterruptedException {

@@ -1,4 +1,4 @@
-package main.java.week2.statsAccumulator;
+package week2.statsAccumulator;
 
 public interface StatsAccumulator {
     /**

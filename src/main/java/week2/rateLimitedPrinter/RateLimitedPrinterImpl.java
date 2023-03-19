@@ -1,4 +1,4 @@
-package main.java.week2.rateLimitedPrinter;
+package week2.rateLimitedPrinter;
 
 import java.util.Date;
 

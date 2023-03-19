@@ -1,4 +1,4 @@
-package main.java.week3.transliterator;
+package week3.transliterator;
 
 import java.util.HashMap;
 import java.util.Map;
