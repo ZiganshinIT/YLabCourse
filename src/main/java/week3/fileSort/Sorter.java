@@ -5,142 +5,140 @@ import java.util.*;
 import java.nio.file.*;
 
 public class Sorter {
-    public File sortFile(File dataFile) throws IOException {
-        File file = new File(dataFile.toURI());
 
-        // Подсчет количества строк в файле
-        int fileLineCount = 0;
-//        Scanner dataFileReader = null;
-        try (Scanner dataFileReader = new Scanner(new FileReader(file))){
+    public static long fileLinesCount(File file) {
+        long fileLinesCount = 0;
 
-            while ( dataFileReader.hasNext() ){
-                dataFileReader.next();
-                fileLineCount++;
+        try (FileReader fileReader = new FileReader(file); Scanner dataFileReader = new Scanner(fileReader)) {
+            while (dataFileReader.hasNextLine()) {
+                dataFileReader.nextLine();
+                fileLinesCount++;
             }
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        }
-
-
-
-
-
-
-        try {
-            FileReader fileReader = new FileReader(file);
-            BufferedReader bufferedReader = new BufferedReader(fileReader);
-            String fileRow;
-            int rowNumber = 1;
-            int fileNumber = 1;
-            FileWriter fileWriter = new FileWriter("src/main/java/week3/fileSort/file" + fileNumber + ".txt");
-            while ((fileRow = bufferedReader.readLine()) != null) {
-
-                rowNumber++;
-                fileWriter.append(fileRow);
-                fileWriter.append("\r\n");
-
-                if ((rowNumber / 10) > (fileNumber - 1) && rowNumber < 100) {
-                    fileWriter.close();
-                    fileNumber++;
-                    fileWriter = new FileWriter("src/main/java/week3/fileSort/file" + fileNumber + ".txt");
-                }
-            }
-
-            fileReader.close();
-            fileWriter.close();
-
-
         } catch (IOException e) {
             e.printStackTrace();
         }
 
+        return fileLinesCount;
+    }
 
-        try {
-            for (int i = 1; i <= 10; i++) {
-                ArrayList<Long> list = new ArrayList<>();
-                FileReader fileReader = new FileReader("src/main/java/week3/fileSort/file" + i + ".txt");
-                BufferedReader bufferedReader = new BufferedReader(fileReader);
-                String fileRowRider;
 
-                while ((fileRowRider = bufferedReader.readLine()) != null) {
-                    list.add(Long.parseLong(fileRowRider));
-                }
+    public File sortFile(File dataFile) throws IOException {
 
-                Collections.sort(list); // отсортирован
+        File file = new File(dataFile.toURI());
 
-                try (FileWriter fileWriter = new FileWriter("src/main/java/week3/fileSort/file" + i + ".txt")) {
-                    for (Long k : list) {
-                        fileWriter.write(k.toString());
-                        fileWriter.append("\r\n");
-                    }
+        final long FILE_LINES_COUNT = fileLinesCount(file);
+        final int SUPPORT_FILE_COUNT = 10;
+        final long COUNT_ELEMENT_IN_CHANG = FILE_LINES_COUNT / SUPPORT_FILE_COUNT;
 
-                }
-                fileReader.close();
-            }
+        try (FileReader dataFileReader = new FileReader(dataFile);
+             BufferedReader dataFileBufferedReader = new BufferedReader(dataFileReader)) {
 
+            String filesRow;
+            int rowsNumber = 1;
+            int changNumber = 1;
+
+            FileWriter fileWriter = null;
             try {
-                Map<BufferedReader, Long> map = new HashMap<>();
-                for (int i = 1; i <= 10; i++) {
-                    try {
-                        FileReader fileReader = new FileReader("src/main/java/week3/fileSort/file" + i + ".txt");
-                        BufferedReader bufferedReader = new BufferedReader(fileReader);
-                        String strLine = bufferedReader.readLine();
-                        if (strLine != null)
-                            map.put(bufferedReader, Long.parseLong(strLine));
+                fileWriter = new FileWriter("src/main/java/week3/fileSort/file" + changNumber + ".txt");
+                while ((filesRow = dataFileBufferedReader.readLine()) != null) {
+                    rowsNumber++;
+                    fileWriter.append(filesRow).append("\r\n");
 
-                    } catch (IOException e) {} // ИСРАВИТЬ
-                }
-
-                try (FileWriter fileWriter = new FileWriter("src/main/java/week3/fileSort/data.txt")) {
-                    for (int i = 0; i < 100; i++) {
-                        BufferedReader br = null;
-                        Long minNum = Long.MAX_VALUE;
-                        for (BufferedReader bufferedReader : map.keySet()) {
-                            if (map.get(bufferedReader) < minNum) {
-                                minNum = map.get(bufferedReader);
-                                br = bufferedReader;
-                            }
-                        }
-                        String some = br.readLine();
-                        if (some != null) {
-                            map.put(br, Long.parseLong(some));
-                        } else {
-                            br.close();
-                            map.remove(br);
-                        }
-                        fileWriter.append(minNum.toString());
-                        fileWriter.append("\r\n");
+                    if ((rowsNumber % COUNT_ELEMENT_IN_CHANG == 0 && rowsNumber < FILE_LINES_COUNT)) {
+                        fileWriter.close();
+                        fileWriter = new FileWriter("src/main/java/week3/fileSort/file" + ++changNumber + ".txt");
                     }
-
-                    for (BufferedReader br : map.keySet()) {
-                        br.close();
-                    }
-
                 }
+            } catch (IOException e) {
+                e.printStackTrace();
 
+            } finally {
+                fileWriter.close();
+            }
+        }
+
+        ArrayList<Long> listOfChangsElement = new ArrayList<>();
+
+        for (int i = 1; i <= SUPPORT_FILE_COUNT; i++) {
+            try (FileReader fileReader = new FileReader("src/main/java/week3/fileSort/file" + i + ".txt");
+                 BufferedReader bufferedReader = new BufferedReader(fileReader)) {
+                String fileRowReader;
+
+                while ((fileRowReader = bufferedReader.readLine()) != null) {
+                    long changElement = Long.parseLong(fileRowReader);
+                    listOfChangsElement.add(changElement);
+                }
             } catch (IOException e) {
                 e.printStackTrace();
             }
 
+        }
 
-        } catch (IOException e) {
-            e.printStackTrace();
+        Collections.sort(listOfChangsElement); // отсортирован
+
+        for (int i = 1; i <= SUPPORT_FILE_COUNT; i++) {
+            try (FileWriter fileWriter = new FileWriter("src/main/java/week3/fileSort/file" + i + ".txt")) {
+                for (Long k : listOfChangsElement) {
+                    fileWriter.write(k.toString());
+                    fileWriter.append("\r\n");
+                }
+            }
+        }
+
+        {
+            Map<BufferedReader, Long> bufferedReaderAndHisCurrentValue = new HashMap<>();
+            for (int i = 1; i <= SUPPORT_FILE_COUNT; i++) {
+                try {
+                    FileReader fileReader = new FileReader("src/main/java/week3/fileSort/file" + i + ".txt");
+                    BufferedReader bufferedReader = new BufferedReader(fileReader);
+                    String bufferedReaderCurrentValue = bufferedReader.readLine();
+                    if (bufferedReaderCurrentValue != null) {
+                        long parseToLong = Long.parseLong(bufferedReaderCurrentValue);
+                        bufferedReaderAndHisCurrentValue.put(bufferedReader, parseToLong);
+                    }
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+
+            try (FileWriter fileWriter = new FileWriter("src/main/java/week3/fileSort/data.txt")) {
+                for (int i = 0; i < FILE_LINES_COUNT; i++) {
+                    BufferedReader currentBufferedReader = null;
+                    Long minNum = Long.MAX_VALUE;
+                    for (BufferedReader bufferedReader : bufferedReaderAndHisCurrentValue.keySet()) {
+                        long bufferedReaderCurrentValue = bufferedReaderAndHisCurrentValue.get(bufferedReader);
+                        if (bufferedReaderCurrentValue < minNum) {
+                            minNum = bufferedReaderCurrentValue;
+                            currentBufferedReader = bufferedReader;
+                        }
+                    }
+
+                    String bufferedReaderNextValue = currentBufferedReader.readLine();
+                    if (bufferedReaderNextValue != null) {
+                        long parseToLong = Long.parseLong(bufferedReaderNextValue);
+                        bufferedReaderAndHisCurrentValue.put(currentBufferedReader, parseToLong);
+                    } else {
+                        currentBufferedReader.close();
+                        bufferedReaderAndHisCurrentValue.remove(currentBufferedReader);
+                    }
+
+                    String valueToAdd = minNum.toString();
+                    fileWriter.append(valueToAdd).append("\r\n");;
+                }
+
+                for (BufferedReader bufferedReader : bufferedReaderAndHisCurrentValue.keySet()) {
+                    bufferedReader.close();
+                }
+            }
         }
 
         try {
-            for (int i = 1; i <= 10; i++) {
+            for (int i = 1; i <= SUPPORT_FILE_COUNT; i++) {
                 Files.deleteIfExists(Paths.get("src/main/java/week3/fileSort/file" + i + ".txt"));
             }
-        } catch (NoSuchFileException e) {
-            System.out.println(
-                    "No such file/directory exists");
-        } catch (DirectoryNotEmptyException e) {
-            System.out.println("Directory is not empty.");
         } catch (IOException e) {
             e.printStackTrace();
-            System.out.println("Invalid permissions.");
         }
-
         return file;
     }
 }
