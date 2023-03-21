@@ -4,3 +4,4 @@
 log/
 target/
 main/resources
+/src/main/java/week3/fileSort/data.txt

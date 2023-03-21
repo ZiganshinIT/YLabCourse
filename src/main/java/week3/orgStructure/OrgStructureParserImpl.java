@@ -21,47 +21,48 @@ public class OrgStructureParserImpl implements OrgStructureParser {
             while (scanner.hasNext()) {
                 String csvLine = scanner.next();
 
+                // пропуск первой строки
                 if (isFirstLine) {
                     isFirstLine = false;
                     continue;
                 }
 
+                // пропуск пустых строк
                 if (csvLine.isBlank()) {
                     continue;
                 }
 
+                // строка файла разбитая на элементы массива
                 String[] strArray = csvLine.split(";");
 
+                // Создание работника
                 Employee employee = new Employee();
-
                 employee.setId(Long.parseLong(strArray[0]));
                 employee.setBossId(strArray[1].equals("") ? null : Long.parseLong(strArray[1]));
                 employee.setName(strArray[2]);
                 employee.setPosition(strArray[3]);
 
-                if (employee.getBossId() == null) {
-                    generalBossObj = employee;
-                }
-
                 employees.add(employee);
 
+                // определение ген. директора
                 if (employee.getBossId() == null) {
+                    generalBossObj = employee;
                     continue;
                 }
 
+                // создание ArrayList с подчиненными
                 long bossId = employee.getBossId();
-
                 if (bossIDAndHisSubordinate.containsKey(bossId)) {
                     ArrayList<Employee> subordinates = bossIDAndHisSubordinate.get(bossId);
                     subordinates.add(employee);
                 } else {
-                    ArrayList<Employee> arrayList = new ArrayList<>();
-                    arrayList.add(employee);
-                    bossIDAndHisSubordinate.put(bossId, arrayList);
+                    ArrayList<Employee> subordinates = new ArrayList<>();
+                    subordinates.add(employee);
+                    bossIDAndHisSubordinate.put(bossId, subordinates);
                 }
             }
-        } catch (IOException ex) {
-            ex.printStackTrace();
+        } catch (IOException e) {
+            System.out.println(e.getMessage());
         }
 
         if (employees.isEmpty()) {
@@ -70,18 +71,17 @@ public class OrgStructureParserImpl implements OrgStructureParser {
 
         employees.sort((o1, o2) -> (int) (o1.getId() - o2.getId()));
 
+        // задание всем работникам лист с подчиненными
         for (Employee e : employees) {
-            if (bossIDAndHisSubordinate.get(e.getId()) != null) {
+            long employeesID = e.getId();
+            if (bossIDAndHisSubordinate.get(employeesID) != null) {
                 e.getSubordinate().addAll(bossIDAndHisSubordinate.get(e.getId()));
             }
 
-            if (e.getBossId() == null) {
-                continue;
+            if (e.getBossId() != null) {
+                e.setBoss(employees.get(Math.toIntExact(e.getBossId())));
             }
-
-            e.setBoss(employees.get(Math.toIntExact(e.getBossId())));
         }
-
         return generalBossObj;
     }
 }
