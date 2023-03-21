@@ -10,7 +10,6 @@ public class Generator {
         try (PrintWriter pw = new PrintWriter(file)) {
             for (int i = 0; i < count; i++) {
                 pw.println(random.nextLong());
-//                pw.println(i);
             }
             pw.flush();
         }

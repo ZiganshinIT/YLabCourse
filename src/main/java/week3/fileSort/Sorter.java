@@ -21,7 +21,6 @@ public class Sorter {
         return fileLinesCount;
     }
 
-
     public File sortFile(File dataFile) throws IOException {
 
         File file = new File(dataFile.toURI());
@@ -34,7 +33,7 @@ public class Sorter {
              BufferedReader dataFileBufferedReader = new BufferedReader(dataFileReader)) {
 
             String filesRow;
-            int rowsNumber = 1;
+            int rowsNumber = 0;
             int changNumber = 1;
 
             FileWriter fileWriter = null;
@@ -44,7 +43,7 @@ public class Sorter {
                     rowsNumber++;
                     fileWriter.append(filesRow).append("\r\n");
 
-                    if ((rowsNumber % COUNT_ELEMENT_IN_CHANG == 0 && rowsNumber < FILE_LINES_COUNT)) {
+                    if ((rowsNumber % COUNT_ELEMENT_IN_CHANG == 0 && rowsNumber <= FILE_LINES_COUNT)) {
                         fileWriter.close();
                         fileWriter = new FileWriter("src/main/java/week3/fileSort/file" + ++changNumber + ".txt");
                     }
@@ -68,38 +67,36 @@ public class Sorter {
                     long changElement = Long.parseLong(fileRowReader);
                     listOfChangsElement.add(changElement);
                 }
+
+                Collections.sort(listOfChangsElement); // отсортирован
+
+                try (FileWriter fileWriter = new FileWriter("src/main/java/week3/fileSort/file" + i + ".txt")) {
+                    for (Long k : listOfChangsElement) {
+                        fileWriter.write(k.toString());
+                        fileWriter.append("\r\n");
+                    }
+                }
+                listOfChangsElement.clear();
+
             } catch (IOException e) {
                 e.printStackTrace();
             }
 
         }
-
-        Collections.sort(listOfChangsElement); // отсортирован
+        Map<BufferedReader, Long> bufferedReaderAndHisCurrentValue = new HashMap<>();
 
         for (int i = 1; i <= SUPPORT_FILE_COUNT; i++) {
-            try (FileWriter fileWriter = new FileWriter("src/main/java/week3/fileSort/file" + i + ".txt")) {
-                for (Long k : listOfChangsElement) {
-                    fileWriter.write(k.toString());
-                    fileWriter.append("\r\n");
-                }
+            try {
+                FileReader fileReader = new FileReader("src/main/java/week3/fileSort/file" + i + ".txt");
+                BufferedReader bufferedReader = new BufferedReader(fileReader);
+                String strLine = bufferedReader.readLine();
+                if (strLine != null)
+                    bufferedReaderAndHisCurrentValue.put(bufferedReader, Long.parseLong(strLine));
+
+            } catch (IOException e) {
+                e.printStackTrace();
             }
         }
-
-        {
-            Map<BufferedReader, Long> bufferedReaderAndHisCurrentValue = new HashMap<>();
-            for (int i = 1; i <= SUPPORT_FILE_COUNT; i++) {
-                try {
-                    FileReader fileReader = new FileReader("src/main/java/week3/fileSort/file" + i + ".txt");
-                    BufferedReader bufferedReader = new BufferedReader(fileReader);
-                    String bufferedReaderCurrentValue = bufferedReader.readLine();
-                    if (bufferedReaderCurrentValue != null) {
-                        long parseToLong = Long.parseLong(bufferedReaderCurrentValue);
-                        bufferedReaderAndHisCurrentValue.put(bufferedReader, parseToLong);
-                    }
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
 
             try (FileWriter fileWriter = new FileWriter("src/main/java/week3/fileSort/data.txt")) {
                 for (int i = 0; i < FILE_LINES_COUNT; i++) {
@@ -123,20 +120,19 @@ public class Sorter {
                     }
 
                     String valueToAdd = minNum.toString();
-                    fileWriter.append(valueToAdd).append("\r\n");;
+                    fileWriter.append(valueToAdd).append("\r\n");
                 }
 
                 for (BufferedReader bufferedReader : bufferedReaderAndHisCurrentValue.keySet()) {
                     bufferedReader.close();
                 }
             }
-        }
-
         try {
-            for (int i = 1; i <= SUPPORT_FILE_COUNT; i++) {
+            for (int i = 1; i <= SUPPORT_FILE_COUNT + 1; i++) {
                 Files.deleteIfExists(Paths.get("src/main/java/week3/fileSort/file" + i + ".txt"));
             }
-        } catch (IOException e) {
+        } catch (
+                IOException e) {
             e.printStackTrace();
         }
         return file;
